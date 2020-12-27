@@ -42,7 +42,7 @@ public class NetworkUtils {
 
     // Числовые параметры для метода, определяющего способ сортировки
     public static final int POPULARITY = 0;
-    public static final int YOP_RATED = 1;
+    public static final int TOP_RATED = 1;
 
     /**
      * Метод, формирующий запрос. Сначала парсим строку в адрес, затем прикрепляем запросы в формате

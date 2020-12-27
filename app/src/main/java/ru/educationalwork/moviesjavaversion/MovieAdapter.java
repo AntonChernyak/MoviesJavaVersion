@@ -17,6 +17,16 @@ import ru.educationalwork.moviesjavaversion.data.Movie;
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
 
     private ArrayList<Movie> movies;
+    private OnPosterClickLister onPosterClickLister;
+    private OnReachEndListener onReachEndListener;
+
+    public void setOnPosterClickLister(OnPosterClickLister onPosterClickLister) {
+        this.onPosterClickLister = onPosterClickLister;
+    }
+
+    public void setOnReachEndListener(OnReachEndListener onReachEndListener) {
+        this.onReachEndListener = onReachEndListener;
+    }
 
     // Конструктор
     public ArrayList<Movie> getMovies() {
@@ -53,6 +63,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
            Всё это проделываем сразу при конвертации JSON в объект в классе JSONUtils.
         */
 
+        // Пагинация
+        if ((position == movies.size() - 4) && onReachEndListener != null) {
+            onReachEndListener.onReachEnd();
+        }
+
         Movie movie = movies.get(position);
         // Picasso
         Picasso.get()
@@ -75,14 +90,38 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
     /**
      * ViewHolder
      */
-    static class MovieViewHolder extends RecyclerView.ViewHolder {
+    class MovieViewHolder extends RecyclerView.ViewHolder {
 
         private final ImageView imageViewSmallPoster;
 
         public MovieViewHolder(@NonNull View itemView) {
             super(itemView);
             imageViewSmallPoster = itemView.findViewById(R.id.imageViewSmallPoster);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (onPosterClickLister != null) {
+                        onPosterClickLister.onPosterClick(getAdapterPosition());
+                    }
+                }
+            });
         }
 
     }
+
+    /**
+     * Интерфейс для кликов на item
+     */
+    interface OnPosterClickLister {
+        void onPosterClick(int position);
+    }
+
+    /**
+     * Интерфейс для пагинации
+     */
+    interface OnReachEndListener {
+        void onReachEnd();
+    }
+
 }

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorPrimaryDark"
     tools:context=".MainActivity">
 
     <androidx.appcompat.widget.SwitchCompat
@@ -18,11 +19,13 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textViewPopularuty"
+        android:id="@+id/textViewPopularity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
+        android:onClick="onClickSetPopularity"
         android:text="@string/most_popular"
+        android:textColor="@color/white_color"
         app:layout_constraintBottom_toBottomOf="@+id/switchSort"
         app:layout_constraintEnd_toStartOf="@+id/switchSort"
         app:layout_constraintTop_toTopOf="@+id/switchSort" />
@@ -33,6 +36,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:text="@string/top_rated"
+        android:textColor="@color/white_color"
+        android:onClick="onClickSetOnRated"
         app:layout_constraintBottom_toBottomOf="@+id/switchSort"
         app:layout_constraintStart_toEndOf="@+id/switchSort"
         app:layout_constraintTop_toTopOf="@+id/switchSort" />
