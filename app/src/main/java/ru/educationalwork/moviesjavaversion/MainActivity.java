@@ -1,6 +1,8 @@
 package ru.educationalwork.moviesjavaversion;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.net.Network;
 import android.os.Bundle;
@@ -17,26 +19,20 @@ import ru.educationalwork.moviesjavaversion.utils.NetworkUtils;
 
 public class MainActivity extends AppCompatActivity {
 
+    private RecyclerView recyclerViewPosters;
+    private  MovieAdapter movieAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-/*        String url = NetworkUtils.buildURL(NetworkUtils.POPULARITY, 1).toString();
-        Log.i("MyResult", url);*/
-
-/*        JSONObject jsonObject = NetworkUtils.getJSONFromNetwork(NetworkUtils.YOP_RATED, 3);
-        if (jsonObject == null) {
-            Toast.makeText(this, "Ошибка", Toast.LENGTH_SHORT).show();
-        } else Toast.makeText(this, "", Toast.LENGTH_SHORT).show();*/
-
-        JSONObject jsonObject3 = NetworkUtils.getJSONFromNetwork(NetworkUtils.POPULARITY, 5);
-        ArrayList<Movie> movies = JSONUtils.getMoviesFromJSON(jsonObject3);
-        StringBuilder builder = new StringBuilder();
-        for (Movie m: movies){
-            builder.append(m.getTitle()).append("\n");
-        }
-        Log.i("MyResult", builder.toString());
-
+        recyclerViewPosters = findViewById(R.id.recyclerViewPosters);
+        recyclerViewPosters.setLayoutManager(new GridLayoutManager(this, 2));
+        movieAdapter = new MovieAdapter();
+        JSONObject jsonObject = NetworkUtils.getJSONFromNetwork(NetworkUtils.POPULARITY, 1);
+        ArrayList<Movie> movies = JSONUtils.getMoviesFromJSON(jsonObject);
+        movieAdapter.setMovies(movies);
+        recyclerViewPosters.setAdapter(movieAdapter);
     }
 }
