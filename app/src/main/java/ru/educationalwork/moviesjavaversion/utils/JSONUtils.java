@@ -1,7 +1,5 @@
 package ru.educationalwork.moviesjavaversion.utils;
 
-import android.util.Log;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,12 +26,14 @@ public class JSONUtils {
     private static final String KEY_VOTE_AVERAGE = "vote_average"; // рейтинг
     private static final String KEY_RELEASE_DATE = "release_date";
 
-    /*  В документации в Getting Started находим, что полный путь: https://image.tmdb.org/t/p/w500/poster_path,
-        где до w500 --- базовый url, а сам w500 --- размер картинки
+    /**
+     * В документации в Getting Started находим, что полный путь: https://image.tmdb.org/t/p/w500/poster_path,
+     * где до w500 --- базовый url, а сам w500 --- размер картинки
+     * <p>
+     * Размеры картинки смотрим в пункте Configuration (https://developers.themoviedb.org/3/configuration/get-api-configuration)
+     * в "Try it out" после ввода ключа API в Variables. Отсюда интересует poster_sizes. Для малых изображений возьмем w185, для крупных w780.
+     */
 
-        Размеры картинки смотрим в пункте Configuration (https://developers.themoviedb.org/3/configuration/get-api-configuration)
-        в "Try it out" после ввода ключа API в Variables. Отсюда интересует poster_sizes. Для малых изображений возьмем w185, для крупных w780.
-   */
     // Для обработки постеров
     private static final String BASE_POSTER_URL = "https://image.tmdb.org/t/p/";
     private static final String SMALL_POSTER_SIZE = "w185";
@@ -51,7 +51,7 @@ public class JSONUtils {
             // теперь из полученного ассива json получим фильмы
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject objectMovie = jsonArray.getJSONObject(i);
-                int id = objectMovie.getInt(KEY_VOTE_COUNT);
+                int id = objectMovie.getInt(KEY_ID);
                 int voteCount = objectMovie.getInt(KEY_VOTE_COUNT);
                 String title = objectMovie.getString(KEY_TITLE);
                 String originalTitle = objectMovie.getString(KEY_ORIGINAL_TITLE);
@@ -70,4 +70,5 @@ public class JSONUtils {
         }
         return result;
     }
+
 }

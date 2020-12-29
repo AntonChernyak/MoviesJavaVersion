@@ -1,11 +1,19 @@
 package ru.educationalwork.moviesjavaversion.data;
 
+import androidx.room.Entity;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
+
 /**
- *  Класс для объектов БД. Один единственный конструктор (дополнительные с тегом @Ignore) и геттеры с сеттарами.
- *
- *  В API уже есть id у каждого фильма. Т.е. самим его автогенерировать не нужно. Все названия как в API.
+ * Класс для объектов БД. Один единственный конструктор (дополнительные с тегом @Ignore) и геттеры с сеттарами.
+ * <p>
+ * В API уже есть id у каждого фильма. Т.е. самим его автогенерировать не нужно. Все названия как в API.
  */
+
+
+@Entity(tableName = "movies")
 public class Movie {
+    @PrimaryKey
     private int id;
     private int voteCount;
     private String title;
@@ -29,6 +37,7 @@ public class Movie {
         this.voteAverage = voteAverage;
         this.releaseDate = releaseDate;
     }
+
 
     public int getId() {
         return id;

@@ -114,16 +114,18 @@ public class NetworkUtils {
                     connection.disconnect();
                 }
             }
-            Log.i("MyResult_LoadTask", result.toString());
+            if (result != null) {
+                Log.i("MyResult_LoadTask", result.length() + " " + result.toString());
+            }
             return result;
         }
     }
 
     /**
-     *  Метод получает JSON из сети
-     *  Не забыть добавить в манифест разрешение!
-     *
-     *  По сути это конкретная реализация предыдущего приватного метода
+     * Метод получает JSON из сети
+     * Не забыть добавить в манифест разрешение!
+     * <p>
+     * По сути это конкретная реализация предыдущего приватного метода
      */
     public static JSONObject getJSONFromNetwork(int sortBy, int page) {
         JSONObject result = null;
@@ -135,9 +137,10 @@ public class NetworkUtils {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        Log.i("MyResult_getJSON", result.toString());
+        if (result != null) {
+            Log.i("MyResult_getJSON", result.length() + " " + result.toString());
+        }
         return result;
     }
-
 
 }
