@@ -1,8 +1,14 @@
 package ru.educationalwork.moviesjavaversion.utils;
 
+import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.loader.content.AsyncTaskLoader;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,7 +34,7 @@ import java.util.concurrent.ExecutionException;
  * базовый url --- до знака ?
  * основные параметры --- после знака ?, но до &
  * неосновные параметры --- после &
- *
+ * <p>
  * https://developers.themoviedb.org/3/movies/get-movie-reviews --- для отзывов. Полная API-ссылка:
  * https://api.themoviedb.org/3/movie/{movie_id}/reviews?api_key=<<api_key>>&language=en-US&page=1
  * Мы будем выводить все страницы, поэтому page не указываем
@@ -45,12 +51,14 @@ public class NetworkUtils {
     private static final String PARAMS_API_LANGUAGE = "language";
     private static final String PARAMS_SORT_BY = "sort_by";
     private static final String PARAMS_PAGE = "page";
+    private static final String PARAMS_MIN_VOTE_COUNT = "vote_count.gte";
 
     // Теперь сохраним значения параметров
     private static final String API_KEY = "54006cca47fc8c9aec32e7516a2f4e64";
     private static final String LANGUAGE_VALUE = "ru-RU"; // или en-US
     private static final String SORT_BY_POPULARITY = "popularity.desc"; // по популярности
     private static final String SORT_BY_TOP_RATED = "vote_average.desc"; // по рейтингу
+    private static final String MIN_VOTE_COUNT_VALUE = "5000";
     // номер страницы --- число, которое вегда будет разным. Нечего сохранять
 
     // Числовые параметры для метода, определяющего способ сортировки
@@ -78,6 +86,7 @@ public class NetworkUtils {
                 .appendQueryParameter(PARAMS_API_LANGUAGE, LANGUAGE_VALUE)
                 .appendQueryParameter(PARAMS_SORT_BY, methodOfSort)
                 .appendQueryParameter(PARAMS_PAGE, Integer.toString(page))
+                .appendQueryParameter(PARAMS_MIN_VOTE_COUNT, MIN_VOTE_COUNT_VALUE)
                 .build();
 
         try {
@@ -89,7 +98,7 @@ public class NetworkUtils {
     }
 
     // для URL  трейлерами
-    private static URL buildURLToVideos(int id) {
+    public static URL buildURLToVideos(int id) {
         Uri uri = Uri.parse(String.format(BASE_URL_VIDEOS, id)).buildUpon()
                 .appendQueryParameter(PARAMS_API_KEY, API_KEY)
                 .appendQueryParameter(PARAMS_API_LANGUAGE, LANGUAGE_VALUE)
@@ -103,7 +112,7 @@ public class NetworkUtils {
     }
 
     // для URL с отзывами
-    private static URL buildURLToReviews(int id) {
+    public static URL buildURLToReviews(int id) {
         Uri uri = Uri.parse(String.format(BASE_URL_REVIEWS, id)).buildUpon()
                 .appendQueryParameter(PARAMS_API_KEY, API_KEY)
                 //.appendQueryParameter(PARAMS_API_LANGUAGE, LANGUAGE_VALUE) // отображаем отзывы на всех языках. На русском тут почти нет :(
@@ -132,6 +141,80 @@ public class NetworkUtils {
             HttpURLConnection connection = null;
             try {
                 connection = (HttpURLConnection) urls[0].openConnection();
+                InputStream inputStream = connection.getInputStream();
+                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+                // Чтобы читать сразу строками создадим BufferedReader
+                BufferedReader reader = new BufferedReader(inputStreamReader);
+
+                StringBuilder builder = new StringBuilder();
+                String line = reader.readLine();
+                while (line != null) {
+                    builder.append(line);
+                    line = reader.readLine();
+                }
+                try {
+                    result = new JSONObject(builder.toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                // не забыть закрыть соединение!
+                if (connection != null) {
+                    connection.disconnect();
+                }
+            }
+            if (result != null) {
+                Log.i("MyResult_LoadTask", result.length() + " " + result.toString());
+            }
+            return result;
+        }
+    }
+
+    /**
+     * Загрузка данных из сети с помощью AsyncTaskLoader. Обычный AsyncTask не подойдет (например,
+     * при перевороте экрана загрузка прервется, а приложение упадёт скорее всего
+     */
+    public static class JSONLoader extends AsyncTaskLoader<JSONObject> {
+
+        private Bundle bundle;
+
+        // Источник данных (тут url) бычно передают через Bundle
+        public JSONLoader(@NonNull Context context, Bundle bundle) {
+            super(context);
+            this.bundle = bundle;
+        }
+
+        // Чтобы при инициализации этого загрузчика происходила загрузка переопределим метод onStartLoading()
+        @Override
+        protected void onStartLoading() {
+            super.onStartLoading();
+            forceLoad(); // продолжает загрузку
+        }
+
+        @Nullable
+        @Override
+        public JSONObject loadInBackground() {
+            if (bundle == null) {
+                return null;
+            }
+            String urlAsString = bundle.getString("url");
+            URL url = null;
+            try {
+                url = new URL(urlAsString);
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+            JSONObject result = null;
+
+            if (url == null) {
+                return null;
+            }
+            // Если с url всё в порядке, то создаём соединение
+            HttpURLConnection connection = null;
+            try {
+                connection = (HttpURLConnection) url.openConnection();
                 InputStream inputStream = connection.getInputStream();
                 InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
                 // Чтобы читать сразу строками создадим BufferedReader

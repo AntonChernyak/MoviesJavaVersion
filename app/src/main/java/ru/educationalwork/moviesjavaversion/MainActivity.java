@@ -6,6 +6,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.Loader;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -22,6 +24,7 @@ import android.widget.Toast;
 
 import org.json.JSONObject;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +34,7 @@ import ru.educationalwork.moviesjavaversion.data.Movie;
 import ru.educationalwork.moviesjavaversion.utils.JSONUtils;
 import ru.educationalwork.moviesjavaversion.utils.NetworkUtils;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<JSONObject> {
 
     private SwitchCompat switchSort;
     private RecyclerView recyclerViewPosters;
@@ -41,11 +44,15 @@ public class MainActivity extends AppCompatActivity {
 
     private MainViewModel viewModel;
 
+    private static final int LOADER_ID = 100;
+    private LoaderManager loaderManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        loaderManager = LoaderManager.getInstance(this); // паттерн Singleton. Получае экземпляр загрузчика, который отвечает за все загрузки, которые происходят в приложении
 
         viewModel = new ViewModelProvider(this).get(MainViewModel.class);
         switchSort = findViewById(R.id.switchSort);
@@ -121,14 +128,11 @@ public class MainActivity extends AppCompatActivity {
 
     // Загрузка данных
     private void downloadData(int methodOfSort, int page){
-        JSONObject jsonObject = NetworkUtils.getJSONFromNetwork(methodOfSort, 1);
-        ArrayList<Movie> movies = JSONUtils.getMoviesFromJSON(jsonObject);
-        if (movies != null && !movies.isEmpty()) {
-            viewModel.deleteAllMovies();
-            for (Movie movie : movies) {
-                viewModel.insertMovie(movie);
-            }
-        }
+        URL url = NetworkUtils.buildURL(methodOfSort, page); // создаём url
+        Bundle bundle = new Bundle();
+        bundle.putString("url", url.toString());
+        // добавляем загрузчик. restart --- проверит, есть ли уже loader
+        loaderManager.restartLoader(LOADER_ID, bundle, this); // callback == this, т.к. все слушатеи loader реализовали в активити
     }
 
     // Меню
@@ -153,5 +157,35 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    /*
+        Следующие 3 метода переопределяем из-за интерфейса LoaderManager.LoaderCallbacks<>
+     */
+    @NonNull
+    @Override
+    public Loader<JSONObject> onCreateLoader(int id, @Nullable Bundle args) {
+        // id тут --- уникальный идентификатор загрузчика. Указываем сами.
+        NetworkUtils.JSONLoader jsonLoader = new NetworkUtils.JSONLoader(this, args);
+        return jsonLoader; // получили данные
+    }
+
+    // получнные данные пердаются сюда. Получаем из них фильмы
+    @Override
+    public void onLoadFinished(@NonNull Loader<JSONObject> loader, JSONObject data) {
+        ArrayList<Movie> movies = JSONUtils.getMoviesFromJSON(data);
+        if (movies != null && !movies.isEmpty()) {
+            viewModel.deleteAllMovies();
+            for (Movie movie : movies) {
+                viewModel.insertMovie(movie);
+            }
+        }
+        // после завершения загрузки удаляем loader
+        loaderManager.destroyLoader(LOADER_ID);
+    }
+
+    @Override
+    public void onLoaderReset(@NonNull Loader<JSONObject> loader) {
+
     }
 }
