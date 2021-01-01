@@ -22,10 +22,23 @@ import java.util.concurrent.ExecutionException;
  * Ссылка на API: https://www.themoviedb.org/ . Регистрируемся, запрашиваем ключ, регистрируем приложение.
  * Документация по API: https://developers.themoviedb.org/3 . Раздел Discover --> Try it out --> вставляем ключ
  * --> отправляем запрос --> получаем JSON. Тут же берем базовый URL (до вопросительного знака)
+ * <p>
+ * https://developers.themoviedb.org/3/movies/get-movie-videos --- отсюда про трейлеры. Полная API-ссылка:
+ * https://api.themoviedb.org/3/movie/{movie_id}/videos?api_key=<<api_key>>&language=en-US, где
+ * базовый url --- до знака ?
+ * основные параметры --- после знака ?, но до &
+ * неосновные параметры --- после &
+ *
+ * https://developers.themoviedb.org/3/movies/get-movie-reviews --- для отзывов. Полная API-ссылка:
+ * https://api.themoviedb.org/3/movie/{movie_id}/reviews?api_key=<<api_key>>&language=en-US&page=1
+ * Мы будем выводить все страницы, поэтому page не указываем
  */
+
 public class NetworkUtils {
 
-    private static final String BASE_URL = "https://api.themoviedb.org/3/discover/movie";
+    private static final String BASE_URL = "https://api.themoviedb.org/3/discover/movie"; // основная информация
+    private static final String BASE_URL_VIDEOS = "https://api.themoviedb.org/3/movie/%s/videos"; // трейлеры
+    private static final String BASE_URL_REVIEWS = "https://api.themoviedb.org/3/movie/%s/reviews"; // отзывы
 
     // Из API сохраним нужные нам параметры, которые мы можем включить в запрос
     private static final String PARAMS_API_KEY = "api_key";
@@ -49,6 +62,7 @@ public class NetworkUtils {
      * (параметр, значение) с помощью метода  appendQueryParameter().
      * В итоге получаем ссылку по которой лежит JSON
      */
+    // для URL с основной информацией
     public static URL buildURL(int sortBy, int page) {
         URL result = null;
 
@@ -72,6 +86,34 @@ public class NetworkUtils {
             e.printStackTrace();
         }
         return result;
+    }
+
+    // для URL  трейлерами
+    private static URL buildURLToVideos(int id) {
+        Uri uri = Uri.parse(String.format(BASE_URL_VIDEOS, id)).buildUpon()
+                .appendQueryParameter(PARAMS_API_KEY, API_KEY)
+                .appendQueryParameter(PARAMS_API_LANGUAGE, LANGUAGE_VALUE)
+                .build();
+        try {
+            return new URL(uri.toString());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    // для URL с отзывами
+    private static URL buildURLToReviews(int id) {
+        Uri uri = Uri.parse(String.format(BASE_URL_REVIEWS, id)).buildUpon()
+                .appendQueryParameter(PARAMS_API_KEY, API_KEY)
+                //.appendQueryParameter(PARAMS_API_LANGUAGE, LANGUAGE_VALUE) // отображаем отзывы на всех языках. На русском тут почти нет :(
+                .build();
+        try {
+            return new URL(uri.toString());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /**
@@ -127,6 +169,7 @@ public class NetworkUtils {
      * <p>
      * По сути это конкретная реализация предыдущего приватного метода
      */
+    // Для общих данных
     public static JSONObject getJSONFromNetwork(int sortBy, int page) {
         JSONObject result = null;
         URL url = buildURL(sortBy, page);
@@ -137,8 +180,33 @@ public class NetworkUtils {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        if (result != null) {
-            Log.i("MyResult_getJSON", result.length() + " " + result.toString());
+        return result;
+    }
+
+    // Для трейлеров
+    public static JSONObject getJSONForVideos(int id) {
+        JSONObject result = null;
+        URL url = buildURLToVideos(id);
+        try {
+            result = new JSONLoadTask().execute(url).get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    // Для отзывов
+    public static JSONObject getJSONForReviews(int id) {
+        JSONObject result = null;
+        URL url = buildURLToReviews(id);
+        try {
+            result = new JSONLoadTask().execute(url).get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
         return result;
     }

@@ -1,4 +1,4 @@
-package ru.educationalwork.moviesjavaversion;
+package ru.educationalwork.moviesjavaversion.adapters;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +13,7 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 
+import ru.educationalwork.moviesjavaversion.R;
 import ru.educationalwork.moviesjavaversion.data.Movie;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
@@ -114,14 +115,14 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
     /**
      * Интерфейс для кликов на item
      */
-    interface OnPosterClickLister {
+    public interface OnPosterClickLister {
         void onPosterClick(int position);
     }
 
     /**
      * Интерфейс для пагинации
      */
-    interface OnReachEndListener {
+    public interface OnReachEndListener {
         void onReachEnd();
     }
 

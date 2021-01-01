@@ -7,6 +7,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import ru.educationalwork.moviesjavaversion.data.Movie;
+import ru.educationalwork.moviesjavaversion.data.Review;
+import ru.educationalwork.moviesjavaversion.data.Trailer;
 
 /**
  * Преобразование JSON  в объект Movie
@@ -15,7 +17,19 @@ import ru.educationalwork.moviesjavaversion.data.Movie;
  */
 public class JSONUtils {
 
+    // общий
     private static final String KEY_RESULTS = "results";
+
+    // Для отзывов
+    private static final String KEY_AUTHOR = "author";
+    private static final String KEY_CONTENT = "content";
+
+    // Для трейлеров
+    private static final String KEY_KEY_OF_VIDEO = "key";
+    private static final String KEY_NAME = "name";
+    private static  final String BASE_YOUTUBE_URL = "https://www.youtube.com/watch?v=";
+
+    // для JSON с основной информации о фильме
     private static final String KEY_VOTE_COUNT = "vote_count";
     private static final String KEY_ID = "id";
     private static final String KEY_TITLE = "title";
@@ -69,6 +83,52 @@ public class JSONUtils {
             e.printStackTrace();
         }
         return result;
+    }
+
+    // Получение всех отзывов
+    public static  ArrayList<Review> getReviewsFromJSON(JSONObject jsonObject) {
+        ArrayList<Review> result = new ArrayList<>();
+        if (jsonObject == null) {
+            return result;
+        }
+
+        try {
+            JSONArray jsonArray = jsonObject.getJSONArray(KEY_RESULTS);
+            for (int i = 0; i < jsonArray.length(); i++){
+                JSONObject jsonObjectReview = jsonArray.getJSONObject(i);
+                String author = jsonObjectReview.getString(KEY_AUTHOR);
+                String content = jsonObjectReview.getString(KEY_CONTENT);
+                Review review = new Review(author, content);
+                result.add(review);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return  result;
+    }
+
+    // Получение всех трейлеров
+    public static  ArrayList<Trailer> getTrailersFromJSON(JSONObject jsonObject) {
+        ArrayList<Trailer> result = new ArrayList<>();
+        if (jsonObject == null) {
+            return result;
+        }
+
+        try {
+            JSONArray jsonArray = jsonObject.getJSONArray(KEY_RESULTS);
+            for (int i = 0; i < jsonArray.length(); i++){
+                JSONObject jsonObjectTrailers = jsonArray.getJSONObject(i);
+                /* Само видео по такому ключу получить нельзя. Нам нужна ссылка на youtube по данному ключу
+                   т.е. базовый url ютуба + ключ */
+                String key = BASE_YOUTUBE_URL + jsonObjectTrailers.getString(KEY_KEY_OF_VIDEO);
+                String name = jsonObjectTrailers.getString(KEY_NAME);
+                Trailer trailer = new Trailer(key, name);
+                result.add(trailer);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return  result;
     }
 
 }
