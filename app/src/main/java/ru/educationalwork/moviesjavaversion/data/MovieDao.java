@@ -11,6 +11,7 @@ import java.util.List;
 
 @Dao
 public interface MovieDao {
+    // Для Movie
     @Query("SELECT * FROM movies")
     LiveData<List<Movie>> getAllMovies();
 
@@ -25,5 +26,19 @@ public interface MovieDao {
 
     @Delete
     void deleteMovie(Movie movie);
-}
 
+    // Для FavouriteMovie
+    @Query("SELECT * FROM favourite_movies")
+    LiveData<List<FavouriteMovie>> getAllFavouriteMovies();
+
+    @Query("SELECT * FROM favourite_movies WHERE id == :movieId")
+    FavouriteMovie getFavouriteMovieById(int movieId);
+
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertFavouriteMovie(FavouriteMovie movie);
+
+    @Delete
+    void deleteFavouriteMovie(FavouriteMovie movie);
+
+}
