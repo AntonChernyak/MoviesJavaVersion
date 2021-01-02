@@ -66,7 +66,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         */
 
         // Пагинация
-        if ((position == movies.size() - 4) && onReachEndListener != null) {
+        if (movies.size() >= 20 && position > (movies.size() - 4) && onReachEndListener != null) {
             onReachEndListener.onReachEnd();
         }
 
@@ -76,6 +76,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
                 .load(movie.getPosterPath())
                 .into(holder.imageViewSmallPoster);
 
+    }
+
+    public void clear() {
+        this.movies.clear();
+        notifyDataSetChanged();
     }
 
     @Override

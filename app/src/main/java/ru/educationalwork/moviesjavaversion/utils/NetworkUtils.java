@@ -55,7 +55,7 @@ public class NetworkUtils {
 
     // Теперь сохраним значения параметров
     private static final String API_KEY = "54006cca47fc8c9aec32e7516a2f4e64";
-    private static final String LANGUAGE_VALUE = "ru-RU"; // или en-US
+    //private static final String LANGUAGE_VALUE = "ru-RU"; // или en-US. Upd: Теперь язык передаем в качестве параметра. Выставится автоматически
     private static final String SORT_BY_POPULARITY = "popularity.desc"; // по популярности
     private static final String SORT_BY_TOP_RATED = "vote_average.desc"; // по рейтингу
     private static final String MIN_VOTE_COUNT_VALUE = "5000";
@@ -71,7 +71,7 @@ public class NetworkUtils {
      * В итоге получаем ссылку по которой лежит JSON
      */
     // для URL с основной информацией
-    public static URL buildURL(int sortBy, int page) {
+    public static URL buildURL(int sortBy, int page, String lang) {
         URL result = null;
 
         // определим значение параметра сортироки в зависимости от типа сортировки
@@ -83,7 +83,7 @@ public class NetworkUtils {
         // пишем запрос
         Uri uri = Uri.parse(BASE_URL).buildUpon()
                 .appendQueryParameter(PARAMS_API_KEY, API_KEY)
-                .appendQueryParameter(PARAMS_API_LANGUAGE, LANGUAGE_VALUE)
+                .appendQueryParameter(PARAMS_API_LANGUAGE, lang)
                 .appendQueryParameter(PARAMS_SORT_BY, methodOfSort)
                 .appendQueryParameter(PARAMS_PAGE, Integer.toString(page))
                 .appendQueryParameter(PARAMS_MIN_VOTE_COUNT, MIN_VOTE_COUNT_VALUE)
@@ -98,10 +98,10 @@ public class NetworkUtils {
     }
 
     // для URL  трейлерами
-    public static URL buildURLToVideos(int id) {
+    public static URL buildURLToVideos(int id, String lang) {
         Uri uri = Uri.parse(String.format(BASE_URL_VIDEOS, id)).buildUpon()
                 .appendQueryParameter(PARAMS_API_KEY, API_KEY)
-                .appendQueryParameter(PARAMS_API_LANGUAGE, LANGUAGE_VALUE)
+                .appendQueryParameter(PARAMS_API_LANGUAGE, lang)
                 .build();
         try {
             return new URL(uri.toString());
@@ -179,6 +179,17 @@ public class NetworkUtils {
     public static class JSONLoader extends AsyncTaskLoader<JSONObject> {
 
         private Bundle bundle;
+        private OnStartLoadingListener onStartLoadingListener;
+
+        // слушатель, реагирующий на начало загрузки
+        public interface OnStartLoadingListener {
+            void onStartLoading();
+        }
+
+        // setter
+        public void setOnStartLoadingListener(OnStartLoadingListener onStartLoadingListener) {
+            this.onStartLoadingListener = onStartLoadingListener;
+        }
 
         // Источник данных (тут url) бычно передают через Bundle
         public JSONLoader(@NonNull Context context, Bundle bundle) {
@@ -190,6 +201,9 @@ public class NetworkUtils {
         @Override
         protected void onStartLoading() {
             super.onStartLoading();
+            if (onStartLoadingListener != null) {
+                onStartLoadingListener.onStartLoading();
+            }
             forceLoad(); // продолжает загрузку
         }
 
@@ -253,9 +267,9 @@ public class NetworkUtils {
      * По сути это конкретная реализация предыдущего приватного метода
      */
     // Для общих данных
-    public static JSONObject getJSONFromNetwork(int sortBy, int page) {
+    public static JSONObject getJSONFromNetwork(int sortBy, int page, String lang) {
         JSONObject result = null;
-        URL url = buildURL(sortBy, page);
+        URL url = buildURL(sortBy, page, lang);
         try {
             result = new JSONLoadTask().execute(url).get();
         } catch (ExecutionException e) {
@@ -267,9 +281,9 @@ public class NetworkUtils {
     }
 
     // Для трейлеров
-    public static JSONObject getJSONForVideos(int id) {
+    public static JSONObject getJSONForVideos(int id, String lang) {
         JSONObject result = null;
-        URL url = buildURLToVideos(id);
+        URL url = buildURLToVideos(id, lang);
         try {
             result = new JSONLoadTask().execute(url).get();
         } catch (ExecutionException e) {
