@@ -42,10 +42,10 @@ public class ReviewAdapter  extends RecyclerView.Adapter<ReviewAdapter.ReviewVie
         return reviews.size();
     }
 
-    class ReviewViewHolder extends RecyclerView.ViewHolder{
+    static class ReviewViewHolder extends RecyclerView.ViewHolder{
 
-        private TextView textViewAuthor;
-        private TextView textViewContent;
+        private final TextView textViewAuthor;
+        private final TextView textViewContent;
 
         public ReviewViewHolder(@NonNull View itemView) {
             super(itemView);

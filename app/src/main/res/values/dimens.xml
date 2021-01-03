@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="size_of_star">60dp</dimen>
+    <dimen name="size_of_trailer_play_button">60dp</dimen>
+
+    <dimen name="text_size_labels">14dp</dimen>
 </resources>

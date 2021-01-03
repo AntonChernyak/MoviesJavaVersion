@@ -11,6 +11,7 @@ import androidx.loader.content.Loader;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -67,12 +68,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         loaderManager = LoaderManager.getInstance(this); // паттерн Singleton. Получае экземпляр загрузчика, который отвечает за все загрузки, которые происходят в приложении
 
         viewModel = new ViewModelProvider(this).get(MainViewModel.class);
-        switchSort = findViewById(R.id.switchSort);
-        recyclerViewPosters = findViewById(R.id.recyclerViewPosters);
-        textViewPopularity = findViewById(R.id.textViewPopularity);
-        textViewTopRated = findViewById(R.id.textViewTopRated);
-        progressBarLoading = findViewById(R.id.progressBarLoading);
 
+        initViews();
         recyclerViewPosters.setLayoutManager(new GridLayoutManager(this, getColumnCount()));
         movieAdapter = new MovieAdapter();
         recyclerViewPosters.setAdapter(movieAdapter);
@@ -119,6 +116,14 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             }
         });
 
+    }
+
+    private void initViews() {
+        switchSort = findViewById(R.id.switchSort);
+        recyclerViewPosters = findViewById(R.id.recyclerViewPosters);
+        textViewPopularity = findViewById(R.id.textViewPopularity);
+        textViewTopRated = findViewById(R.id.textViewTopRated);
+        progressBarLoading = findViewById(R.id.progressBarLoading);
     }
 
     // Чтобы менять сортировку можно было не только по Switch, но и по клику на текст
@@ -220,6 +225,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         return super.onCreateOptionsMenu(menu);
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();

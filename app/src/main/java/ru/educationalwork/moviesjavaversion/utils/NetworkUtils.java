@@ -178,7 +178,7 @@ public class NetworkUtils {
      */
     public static class JSONLoader extends AsyncTaskLoader<JSONObject> {
 
-        private Bundle bundle;
+        private final Bundle bundle;
         private OnStartLoadingListener onStartLoadingListener;
 
         // слушатель, реагирующий на начало загрузки
@@ -266,29 +266,13 @@ public class NetworkUtils {
      * <p>
      * По сути это конкретная реализация предыдущего приватного метода
      */
-    // Для общих данных
-    public static JSONObject getJSONFromNetwork(int sortBy, int page, String lang) {
-        JSONObject result = null;
-        URL url = buildURL(sortBy, page, lang);
-        try {
-            result = new JSONLoadTask().execute(url).get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
-
     // Для трейлеров
     public static JSONObject getJSONForVideos(int id, String lang) {
         JSONObject result = null;
         URL url = buildURLToVideos(id, lang);
         try {
             result = new JSONLoadTask().execute(url).get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
+        } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
         return result;
@@ -300,9 +284,7 @@ public class NetworkUtils {
         URL url = buildURLToReviews(id);
         try {
             result = new JSONLoadTask().execute(url).get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
+        } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
         return result;

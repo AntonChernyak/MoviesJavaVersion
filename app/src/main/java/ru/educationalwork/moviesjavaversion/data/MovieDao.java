@@ -24,9 +24,6 @@ public interface MovieDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertMovie(Movie movie);
 
-    @Delete
-    void deleteMovie(Movie movie);
-
     // Для FavouriteMovie
     @Query("SELECT * FROM favourite_movies")
     LiveData<List<FavouriteMovie>> getAllFavouriteMovies();

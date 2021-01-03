@@ -12,13 +12,14 @@
 
         <ImageView
             android:id="@+id/imageViewPlay"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="@dimen/size_of_trailer_play_button"
+            android:layout_height="@dimen/size_of_trailer_play_button"
             android:layout_margin="8dp"
             android:contentDescription="@string/launch_trailer"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            android:background="@color/red_color_500"
             app:srcCompat="@android:drawable/ic_media_play" />
 
         <TextView
@@ -29,7 +30,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/imageViewPlay"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Трейлер №1" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

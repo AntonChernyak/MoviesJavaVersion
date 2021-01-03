@@ -1,11 +1,18 @@
 <resources>
     <string name="app_name">Movies Java Version</string>
-    <string name="movie_poster">Постер к фильму</string>
-    <string name="most_popular">Самые популярные</string>
-    <string name="top_rated">Наиболее рейтинговые</string>
-    <string name="add_to_favourite">Добавлено в избранное</string>
-    <string name="remove_from_favourite">Удалено из избранного</string>
-    <string name="item_main">Главная</string>
-    <string name="item_favourite">Избранное</string>
-    <string name="launch_trailer">Запустить трейлер</string>
+    <string name="movie_poster">Movie poster</string>
+    <string name="most_popular">Most popular</string>
+    <string name="top_rated">Top rated</string>
+    <string name="add_to_favourite">Add to favourite</string>
+    <string name="remove_from_favourite">Remove from favourite</string>
+    <string name="item_main">Main</string>
+    <string name="item_favourite">Favourite</string>
+    <string name="launch_trailer">Play trailer</string>
+    <string name="content_description_movie_poster">Movie poster</string>
+    <string name="content_description_add_favourite_button">Add to favourite button</string>
+    <string name="label_movie_title">Title</string>
+    <string name="label_original_title">Original title</string>
+    <string name="label_rating">Rating</string>
+    <string name="label_release_date">Release date</string>
+    <string name="label_description">Description</string>
 </resources>

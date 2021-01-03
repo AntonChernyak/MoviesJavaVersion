@@ -22,6 +22,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
     private OnPosterClickLister onPosterClickLister;
     private OnReachEndListener onReachEndListener;
 
+    private static final int JSON_MOVIES_COUNT = 20;
+
     public void setOnPosterClickLister(OnPosterClickLister onPosterClickLister) {
         this.onPosterClickLister = onPosterClickLister;
     }
@@ -66,7 +68,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         */
 
         // Пагинация
-        if (movies.size() >= 20 && position > (movies.size() - 4) && onReachEndListener != null) {
+        if (movies.size() >= JSON_MOVIES_COUNT && position > (movies.size() - 4) && onReachEndListener != null) {
             onReachEndListener.onReachEnd();
         }
 
@@ -75,7 +77,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         Picasso.get()
                 .load(movie.getPosterPath())
                 .into(holder.imageViewSmallPoster);
-
     }
 
     public void clear() {

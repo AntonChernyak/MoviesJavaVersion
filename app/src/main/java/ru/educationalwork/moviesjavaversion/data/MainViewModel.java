@@ -13,8 +13,8 @@ import java.util.concurrent.ExecutionException;
 public class MainViewModel extends AndroidViewModel {
 
     private static MovieDatabase database;
-    private LiveData<List<Movie>> movies;
-    private LiveData<List<FavouriteMovie>> favouriteMovies;
+    private final LiveData<List<Movie>> movies;
+    private final LiveData<List<FavouriteMovie>> favouriteMovies;
 
     public LiveData<List<Movie>> getMovies() {
         return movies;
@@ -79,21 +79,6 @@ public class MainViewModel extends AndroidViewModel {
         }
     }
 
-
-    // Удаление одного элемента из БД
-    public void deleteMovie(Movie movie) {
-        new DeleteTask().execute(movie);
-    }
-
-    private static class DeleteTask extends AsyncTask<Movie, Void, Void> {
-        @Override
-        protected Void doInBackground(Movie... movies) {
-            if (movies != null && movies.length > 0) {
-                database.movieDao().deleteMovie(movies[0]);
-            }
-            return null;
-        }
-    }
 
     /**
      * Для FavoriteMovie

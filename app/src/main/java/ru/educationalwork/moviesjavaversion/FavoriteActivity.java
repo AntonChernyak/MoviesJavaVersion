@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -22,32 +23,31 @@ import ru.educationalwork.moviesjavaversion.data.FavouriteMovie;
 import ru.educationalwork.moviesjavaversion.data.MainViewModel;
 import ru.educationalwork.moviesjavaversion.data.Movie;
 
+import static ru.educationalwork.moviesjavaversion.DetailActivity.INTENT_KEY_ID;
+
 public class FavoriteActivity extends AppCompatActivity {
 
-    private RecyclerView recyclerViewFavouriteMovies;
     private MovieAdapter adapter;
-    private MainViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favorite);
 
-        recyclerViewFavouriteMovies = findViewById(R.id.recyclerViewFavouriteMovies);
+        RecyclerView recyclerViewFavouriteMovies = findViewById(R.id.recyclerViewFavouriteMovies);
         recyclerViewFavouriteMovies.setLayoutManager(new GridLayoutManager(this, 2));
         adapter = new MovieAdapter();
         recyclerViewFavouriteMovies.setAdapter(adapter);
 
-        viewModel = new ViewModelProvider(this).get(MainViewModel.class);
+        MainViewModel viewModel = new ViewModelProvider(this).get(MainViewModel.class);
         LiveData<List<FavouriteMovie>> favouriteMovies = viewModel.getFavouriteMovies();
 
         favouriteMovies.observe(this, new Observer<List<FavouriteMovie>>() {
             @Override
             public void onChanged(List<FavouriteMovie> favouriteMovies) {
                 // Дополнительный список, т.к. мы не можем в список с объектами родительского класса вставить объекты дочернего класса.
-                List<Movie> movies = new ArrayList<>();
                 if (favouriteMovies != null) {
-                    movies.addAll(favouriteMovies);
+                    List<Movie> movies = new ArrayList<Movie>(favouriteMovies);
                     adapter.setMovies(movies);
                 }
             }
@@ -58,7 +58,7 @@ public class FavoriteActivity extends AppCompatActivity {
             public void onPosterClick(int position) {
                 Movie movie = adapter.getMovies().get(position);
                 Intent intent = new Intent(FavoriteActivity.this, DetailActivity.class);
-                intent.putExtra("id", movie.getId());
+                intent.putExtra(INTENT_KEY_ID, movie.getId());
                 startActivity(intent);
             }
         });
@@ -72,6 +72,7 @@ public class FavoriteActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();

@@ -39,7 +39,7 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerV
     // ViewHolder
     class TrailerViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView textViewNameOfVideo;
+        private final TextView textViewNameOfVideo;
 
         public TrailerViewHolder(@NonNull View itemView) {
             super(itemView);
